@@ -1,0 +1,36 @@
+version: '3'
+
+name: titan-node
+
+services:
+  titan-node:
+    image: "titantkx/titan-node-runner:1.0.0"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    expose:    
+      - 26656 # rpc
+      - 26657 # p2p
+      - 9090  # grpc
+      - 9091  # grpc-gateway
+      - 1317  # rest
+      - 8545  # json-rpc
+      - 8546  # json-rpc ws
+      - 8080  # rosetta
+      - 26660 # cometbft metrics
+      - 6065  # evm metrics
+    volumes:
+      - ./data:/root/data
+    environment:
+      - HOME=/root
+      - HOME_DATA=/root/data
+      - TITAN_NODE_MONIKER=test-node
+      - TITAN_LOG=info
+      - TITAN_EXTERNAL_ADDRESS="0.0.0.0:26656"
+      - TITAN_SEEDS=
+      - TITAN_RPC_ENDPOINT=
+      - TITAN_RPC_STATE_SYNC_ENDPOINT=
+      - TITAN_CHAIN_TYPE=testnet
+      - TITAN_NODE_TYPE=sentry
+      - TITAN_SYNC_TYPE=full
