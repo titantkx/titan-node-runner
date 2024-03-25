@@ -224,7 +224,8 @@ config_updatable() {
   echo "Config updatable"
   echo "TITAN_NODE_MONIKER: $TITAN_NODE_MONIKER"
   echo "TITAN_EXTERNAL_ADDRESS: $TITAN_EXTERNAL_ADDRESS"
-  echo "TITAN_SEEDS=$TITAN_SEEDS"
+  echo "TITAN_SEEDS: $TITAN_SEEDS"
+  echo "TITAN_LOG: $TITAN_LOG"
 
   # config moniker in config.toml
   $sed_inplace "s/\(moniker = \).*/\1\"$TITAN_NODE_MONIKER\"/" $TITAN_HOME/config/config.toml
