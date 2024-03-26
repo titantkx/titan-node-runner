@@ -231,7 +231,7 @@ if [ -d $TITAN_HOME/data/application.db ] && [ -d $TITAN_HOME/data/state.db ] &&
   if [ "$force_init" = "true" ]; then
     skip_init_node="false"
     echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-    echo "!!!!! NOTE: Node is already initialized with data. Chain type, node type and sync type will be ignored. INITIALIZING NODE WILL BE FORCE.!!!!!!!!!!!"
+    echo "!!!!! NOTE: Node is already initialized with data. INITIALIZING NODE WILL BE FORCE.!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
     echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
     
     # ask user to confirm
