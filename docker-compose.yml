@@ -23,8 +23,6 @@ services:
     volumes:
       - ./data:/root/data
     environment:
-      - HOME=/root
-      - HOME_DATA=/root/data
       - TITAN_NODE_MONIKER=test-node
       - TITAN_LOG=info
       - TITAN_EXTERNAL_ADDRESS="0.0.0.0:26656"

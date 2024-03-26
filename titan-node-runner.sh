@@ -14,11 +14,21 @@ if [ "$platform_arch" = "x86_64" ]; then
 fi
 echo "Platform: $platform_os - $platform_arch"
 
+# get dir of script
+SCRIPT_DIR=$(dirname $0)
+CURRENT_DIR=$(pwd)
+
+# check if have `sudo`
+have_sudo="true"
+if ! [ -x "$(command -v sudo)" ]; then  
+  have_sudo="false"  
+fi
+
 ################################################################
 #                 Init cross platfrom functions                #
 ################################################################
 
-if [ "$platform" = "Darwin" ]; then
+if [ "$platform_os" = "Darwin" ]; then
     sed_inplace="sed -i ''"
 else
     sed_inplace="sed -i"
@@ -36,7 +46,7 @@ if [ -z "$HOME" ]; then
   HOME="/root"
 fi
 if [ -z "$HOME_DATA" ]; then
-  HOME_DATA="$HOME/data"
+  HOME_DATA="$HOME"
 fi
 if [ -z "$TITAN_HOME" ]; then
   TITAN_HOME="$HOME_DATA/.titand"
@@ -57,7 +67,7 @@ force_init="false"
 
 # print help function
 print_help() {
-  echo "Usage: entrypoint.sh [OPTIONS]"
+  echo "Usage: titan-node-runner.sh [OPTIONS]"
   echo "Options:"
   echo "  --chain-type <mainnet|testnet>  Chain type of titan network"
   echo "  --node-type <full|sentry|validator|seed>  Node type of titan network"
@@ -245,8 +255,20 @@ if [ "$skip_init_node" = "true" ]; then
   config_updatable
     
   # fix share lib for version 2.0.0 or smaller
-  # if [ "$titand_current_version" = "2.0.0" ] || [ "$titand_current_version" = "1.0.0" ]; then
-  cp $TITAN_HOME/cosmovisor/current/lib/* /usr/lib/
+  # if [ "$titand_current_version" = "2.0.0" ] || [ "$titand_current_version" = "1.0.0" ]; then  
+  if [ "$platform_os" = "Darwin" ]; then
+    if [ "$have_sudo" = "true" ]; then
+      sudo cp $TITAN_HOME/cosmovisor/current/lib/* /usr/local/lib/
+    else
+      cp $TITAN_HOME/cosmovisor/current/lib/* /usr/local/lib/
+    fi
+  else
+    if [ "$have_sudo" = "true" ]; then
+      sudo cp $TITAN_HOME/cosmovisor/current/lib/* /usr/lib/
+    else
+      cp $TITAN_HOME/cosmovisor/current/lib/* /usr/lib/
+    fi
+  fi
   # fi
 
   # get current version of titand
@@ -314,28 +336,41 @@ echo "Last block height: $last_block_height"
 
 # download checksums.txt
 echo "Download checksums.txt"
-curl -LO "https://github.com/titantkx/titan/releases/download/v${titand_start_version}/checksums.txt"
+curl -L "https://github.com/titantkx/titan/releases/download/v${titand_start_version}/checksums.txt" -o $HOME_DATA/checksums.txt
 
 # download titand bin from `https://github.com/titantkx/titan/releases/download/v<version>/titan_<version>_<os>_<arch>.tar.gz`
 echo "Download titand archive"
-curl -LO "https://github.com/titantkx/titan/releases/download/v${titand_start_version}/titan_${titand_start_version}_${platform_os}_${platform_arch}.tar.gz"
+curl -L "https://github.com/titantkx/titan/releases/download/v${titand_start_version}/titan_${titand_start_version}_${platform_os}_${platform_arch}.tar.gz" -o $HOME_DATA/"titan_${titand_start_version}_${platform_os}_${platform_arch}.tar.gz"
 
 # verify checksums
+cd $HOME_DATA
 # Extract the line for the specific file from checksums.txt
 checksum_line=$(grep "titan_${titand_start_version}_${platform_os}_${platform_arch}.tar.gz" checksums.txt)
 echo "Checksum info: $checksum_line"
 echo $checksum_line | sha256sum --strict -wc -
-
 echo "Download titand archive successfully"
+cd $CURRENT_DIR
 
 echo "Extract titand archive"
 
-mkdir $HOME_DATA/titan
-tar -xzf "titan_${titand_start_version}_${platform_os}_${platform_arch}.tar.gz" -C $HOME_DATA/titan
+mkdir -p $HOME_DATA/titan
+tar -xzf "$HOME_DATA/titan_${titand_start_version}_${platform_os}_${platform_arch}.tar.gz" -C $HOME_DATA/titan
 
 # fix share lib for version 2.0.0 or smaller
 if [ "$titand_start_version" = "2.0.0" ] || [ "$titand_start_version" = "1.0.0" ]; then
-  cp $HOME_DATA/titan/lib/* /usr/lib
+  if [ "$platform_os" = "Darwin" ]; then
+    if [ "$have_sudo" = "true" ]; then
+      sudo cp $TITAN_HOME/cosmovisor/current/lib/* /usr/local/lib/
+    else
+      cp $TITAN_HOME/cosmovisor/current/lib/* /usr/local/lib/
+    fi
+  else
+    if [ "$have_sudo" = "true" ]; then
+      sudo cp $TITAN_HOME/cosmovisor/current/lib/* /usr/lib/
+    else
+      cp $TITAN_HOME/cosmovisor/current/lib/* /usr/lib/
+    fi
+  fi
 fi
 
 echo "Verify downloaded titand version"
@@ -351,13 +386,13 @@ $HOME_DATA/titan/bin/titand init $TITAN_NODE_MONIKER --chain-id $chain_id --home
 echo " "
 
 # copy genesis.json
-curl -LO $genesis_url
-gzip -d genesis.json.gz
-cp genesis.json $TITAN_HOME/config/genesis.json
+curl -L $genesis_url -o $TITAN_HOME/config/genesis.json.gz
+echo "Extract genesis.json"
+gzip -fd $TITAN_HOME/config/genesis.json.gz
 
 # copy coresponse config_tmp
-cp $HOME/configs_tmp/$TITAN_NODE_TYPE/app.toml $TITAN_HOME/config/app.toml
-cp $HOME/configs_tmp/$TITAN_NODE_TYPE/config.toml $TITAN_HOME/config/config.toml
+cp $SCRIPT_DIR/configs_tmp/$TITAN_NODE_TYPE/app.toml $TITAN_HOME/config/app.toml
+cp $SCRIPT_DIR/configs_tmp/$TITAN_NODE_TYPE/config.toml $TITAN_HOME/config/config.toml
 
 # adjust app.toml and config.toml
 echo "Adjust app.toml and config.toml"
