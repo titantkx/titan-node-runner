@@ -38,6 +38,48 @@ fi
 #                 Ensure required programs exist               #
 ################################################################
 
+# check if `jq` exists
+if ! [ -x "$(command -v jq)" ]; then
+  echo "Error: jq is not installed."
+  exit 1
+fi
+
+# check if `curl` exists
+if ! [ -x "$(command -v curl)" ]; then
+  echo "Error: curl is not installed."
+  exit 1
+fi
+
+# check if `go` exists
+if ! [ -x "$(command -v go)" ]; then
+  echo "Error: go is not installed."
+  exit 1
+fi
+
+# check if `cosmovisor` exists
+if ! [ -x "$(command -v cosmovisor)" ]; then
+  echo "Error: cosmovisor is not installed."
+  go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@v1.5.0
+fi
+
+# check if `sha256sum` exists
+if ! [ -x "$(command -v sha256sum)" ]; then
+  echo "Error: sha256sum is not installed. Please install coreutils"
+  exit 1
+fi
+
+# check if `gzip` exists
+if ! [ -x "$(command -v gzip)" ]; then
+  echo "Error: gzip is not installed."
+  exit 1
+fi
+
+# check if `tar` exists
+if ! [ -x "$(command -v tar)" ]; then
+  echo "Error: tar is not installed."
+  exit 1
+fi
+
 ################################################################
 #                 Init environment and params                  #
 ################################################################
