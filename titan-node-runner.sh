@@ -295,27 +295,32 @@ if [ "$skip_init_node" = "true" ]; then
 ################################################################
 
   config_updatable
-    
-  # fix share lib for version 2.0.0 or smaller
-  # if [ "$titand_current_version" = "2.0.0" ] || [ "$titand_current_version" = "1.0.0" ]; then  
-  if [ "$platform_os" = "Darwin" ]; then
-    if [ "$have_sudo" = "true" ]; then
-      sudo cp $TITAN_HOME/cosmovisor/current/lib/* /usr/local/lib/
-    else
-      cp $TITAN_HOME/cosmovisor/current/lib/* /usr/local/lib/
-    fi
-  else
-    if [ "$have_sudo" = "true" ]; then
-      sudo cp $TITAN_HOME/cosmovisor/current/lib/* /usr/lib/
-    else
-      cp $TITAN_HOME/cosmovisor/current/lib/* /usr/lib/
-    fi
-  fi
-  # fi
+      
+  # get current version of titand  
+  titand_current_version=$(cosmovisor run version 2>&1) || {    
+    echo "titand version command failed: $titand_current_version"
+    # if `titand_current_version` contain `error while loading shared libraries` or `Library not loaded`
+    if echo $titand_current_version | grep -q "error while loading shared libraries" || echo $titand_current_version | grep -q "Library not loaded"; then    
+      echo " "
+      echo "Fix share lib for version 2.0.0 or smaller. Copy share lib to /usr/lib/ or /usr/local/lib/"
+      if [ "$platform_os" = "Darwin" ]; then
+        if [ "$have_sudo" = "true" ]; then
+          sudo cp $TITAN_HOME/cosmovisor/current/lib/* /usr/local/lib/
+        else
+          cp $TITAN_HOME/cosmovisor/current/lib/* /usr/local/lib/
+        fi
+      else
+        if [ "$have_sudo" = "true" ]; then
+          sudo cp $TITAN_HOME/cosmovisor/current/lib/* /usr/lib/
+        else
+          cp $TITAN_HOME/cosmovisor/current/lib/* /usr/lib/
+        fi
+      fi
+    fi    
+  }
 
-  # get current version of titand
   titand_current_version=$(cosmovisor run version | sed -n '2p')
-  echo "Current version of titand: $titand_current_version"
+  echo "Current version of titand: $titand_current_version"  
 
   # if params_for_titand is not empty, run cosmovisor with params
   if [ "$contain_params_for_cosmovisor" = "true" ]; then
@@ -398,25 +403,32 @@ echo "Extract titand archive"
 mkdir -p $HOME_DATA/titan
 tar -xzf "$HOME_DATA/titan_${titand_start_version}_${platform_os}_${platform_arch}.tar.gz" -C $HOME_DATA/titan
 
-# fix share lib for version 2.0.0 or smaller
-if [ "$titand_start_version" = "2.0.0" ] || [ "$titand_start_version" = "1.0.0" ]; then
-  if [ "$platform_os" = "Darwin" ]; then
-    if [ "$have_sudo" = "true" ]; then
-      sudo cp $TITAN_HOME/cosmovisor/current/lib/* /usr/local/lib/
+# get current version of titand
+titand_current_version=$($HOME_DATA/titan/bin/titand version 2>&1) || {  
+  echo "titand version command failed: $titand_current_version"
+  # if `titand_current_version` contain `error while loading shared libraries`
+  if echo $titand_current_version | grep -q "error while loading shared libraries" || echo $titand_current_version | grep -q "Library not loaded"; then    
+    echo " "
+    echo "Fix share lib for version 2.0.0 or smaller. Copy share lib to /usr/lib/ or /usr/local/lib/"
+    if [ "$platform_os" = "Darwin" ]; then
+      if [ "$have_sudo" = "true" ]; then
+        sudo cp $HOME_DATA/titan/lib/* /usr/local/lib/
+      else
+        cp $HOME_DATA/titan/lib/* /usr/local/lib/
+      fi
     else
-      cp $TITAN_HOME/cosmovisor/current/lib/* /usr/local/lib/
-    fi
-  else
-    if [ "$have_sudo" = "true" ]; then
-      sudo cp $TITAN_HOME/cosmovisor/current/lib/* /usr/lib/
-    else
-      cp $TITAN_HOME/cosmovisor/current/lib/* /usr/lib/
+      if [ "$have_sudo" = "true" ]; then
+        sudo cp $HOME_DATA/titan/lib/* /usr/lib/
+      else
+        cp $HOME_DATA/titan/lib/* /usr/lib/
+      fi
     fi
   fi
-fi
+}
 
-echo "Verify downloaded titand version"
-$HOME_DATA/titan/bin/titand version
+titand_current_version=$($HOME_DATA/titan/bin/titand version)
+
+echo "Current version of titand: $titand_current_version"  
 
 ################################################################
 #                             Init node                        #
