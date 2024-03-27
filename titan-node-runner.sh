@@ -129,9 +129,13 @@ print_help() {
   echo "  --node-type <full|sentry|validator|seed>  Node type of titan network"
   echo "  --sync-type <fast|full>  Sync type of titan network"
   echo "  --force-init  Force init node"
+  echo "  --init-only  Only init node"
   echo "  --moniker <string>  Moniker of node"
-  echo "  --ext-addr <string>  External address of node.Example: 159.89.10.97:26656"
+  echo "  --ext-addr <string>  External address of node. Example: 159.89.10.97:26656"
+  echo "  --add-seeds <string>  Additional seeds of node. EX: 80fbc7606d7d8799825b7b44a0b4d53342d92211@ec2-val-1.ap-southeast-1.titan-testnet.internal:26656"
   echo "  --log <info|debug|error|warn>  Log level of node"
+  echo "  --help  Print help"
+  echo "  -- Pass all following arguments to cosmovisor"
   exit 1
 }
 
@@ -164,6 +168,9 @@ while [ "$#" -gt 0 ]; do
                               ;;
             --ext-addr )      shift
                               TITAN_EXTERNAL_ADDRESS=$1
+                              ;;
+            --add-seeds )     shift
+                              additional_seeds=$1
                               ;;
             --log )           shift
                               TITAN_LOG=$1
@@ -284,6 +291,10 @@ elif [ "$TITAN_CHAIN_TYPE" = "testnet" ]; then
   if [ -z "$TITAN_RPC_STATE_SYNC_ENDPOINT" ]; then
     TITAN_RPC_STATE_SYNC_ENDPOINT="https://titan-testnet-rpc-1.titanlab.io:443,https://titan-testnet-rpc-2.titanlab.io:443,https://titan-testnet-rpc-3.titanlab.io:443,https://titan-testnet-rpc-4.titanlab.io:443"
   fi
+fi
+
+if [ ! -z "$additional_seeds" ]; then
+  TITAN_SEEDS="$TITAN_SEEDS,$additional_seeds"
 fi
 
 config_updatable() {
