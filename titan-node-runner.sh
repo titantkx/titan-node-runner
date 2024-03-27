@@ -405,10 +405,6 @@ if [ -f $TITAN_HOME/data/priv_validator_state.json ]; then
   cp $TITAN_HOME/data/priv_validator_state.json $HOME_DATA/bak_$current_time/priv_validator_state.json
 fi
 
-# clean up old data
-rm -rf $TITAN_HOME
-rm -rf $HOME_DATA/titan
-
 ################################################################
 #                 Download start titand bin                    #
 ################################################################
@@ -482,6 +478,10 @@ echo "Current version of titand: $titand_current_version"
 ################################################################
 #                             Init node                        #
 ################################################################
+
+# clean up old data
+rm -rf $TITAN_HOME
+rm -rf $HOME_DATA/titan
 
 # init node
 echo "Init node"
