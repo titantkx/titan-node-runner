@@ -124,6 +124,7 @@ force_init="false"
 # print help function
 print_help() {
   echo "Usage: titan-node-runner.sh [OPTIONS]"
+  echo "Version: 1.1.0"
   echo "Options:"
   echo "  --chain-type <mainnet|testnet>  Chain type of titan network"
   echo "  --node-type <full|sentry|validator|seed>  Node type of titan network"
