@@ -35,7 +35,7 @@ if ! [ -x "$(command -v sudo)" ]; then
 fi
 
 ################################################################
-#                 Init cross platfrom functions                #
+#                 Init cross platform functions                #
 ################################################################
 
 if [ "$platform_os" = "Darwin" ]; then
