@@ -2,7 +2,7 @@
 
 set -e
 
-script_version="1.1.3"
+script_version="1.1.4"
 
 # Detect platform
 platform_os=$(uname -s)
