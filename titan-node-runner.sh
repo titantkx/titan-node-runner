@@ -69,7 +69,14 @@ fi
 # check if `cosmovisor` exists
 if ! [ -x "$(command -v cosmovisor)" ]; then
   echo "Error: cosmovisor is not installed."
+  echo "Install cosmovisor"
   go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@v1.5.0
+  # recheck if `cosmovisor` exists
+  if ! [ -x "$(command -v cosmovisor)" ]; then
+    echo "After install cosmovisor, cosmovisor is not found. Please check again. May be PATH not include go bin path"
+    echo "ENV PATH should contain \$(go env GOPATH)/bin"
+    exit 1
+  fi
 fi
 
 # check if `sha256sum` exists
