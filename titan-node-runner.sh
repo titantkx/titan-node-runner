@@ -14,6 +14,16 @@ if [ "$platform_arch" = "x86_64" ]; then
 fi
 echo "Platform: $platform_os - $platform_arch"
 
+# Only allow `platform_os` is `Linux` or `Darwin`. `platform_arch` is `amd64` or `arm64`
+if [ "$platform_os" != "Linux" ] && [ "$platform_os" != "Darwin" ]; then
+  echo "Error: Unsupported platform_os: $platform_os"
+  exit 1
+fi
+if [ "$platform_arch" != "amd64" ] && [ "$platform_arch" != "arm64" ]; then
+  echo "Error: Unsupported platform_arch: $platform_arch"
+  exit 1
+fi
+
 # get dir of script
 SCRIPT_DIR=$(dirname $0)
 CURRENT_DIR=$(pwd)
