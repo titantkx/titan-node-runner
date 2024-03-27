@@ -504,8 +504,7 @@ if [ "$backed_up" = "true" ]; then
   cp $HOME_DATA/bak_$current_time/config/node_key.json $TITAN_HOME/config/node_key.json
   cp $HOME_DATA/bak_$current_time/config/priv_validator_key.json $TITAN_HOME/config/priv_validator_key.json
   cp $HOME_DATA/bak_$current_time/priv_validator_state.json $TITAN_HOME/data/priv_validator_state.json
-  echo " "
-  rm -rf $HOME_DATA/bak_$current_time
+  echo " "  
 fi
 
 # Create cosmovisor folder
