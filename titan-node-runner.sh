@@ -2,6 +2,8 @@
 
 set -e
 
+script_version="1.1.3"
+
 # Detect platform
 platform_os=$(uname -s)
 platform_arch=$(uname -m)
@@ -131,7 +133,7 @@ force_init="false"
 # print help function
 print_help() {
   echo "Usage: titan-node-runner.sh [OPTIONS]"
-  echo "Version: 1.1.2"
+  echo "Version: $script_version"
   echo "Options:"
   echo "  --chain-type <mainnet|testnet>  Chain type of titan network"
   echo "  --node-type <full|sentry|validator|seed>  Node type of titan network"
