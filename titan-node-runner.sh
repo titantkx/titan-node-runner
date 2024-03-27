@@ -32,8 +32,8 @@ CURRENT_DIR=$(pwd)
 
 # check if have `sudo`
 have_sudo="true"
-if ! [ -x "$(command -v sudo)" ]; then  
-  have_sudo="false"  
+if ! [ -x "$(command -v sudo)" ]; then
+  have_sudo="false"
 fi
 
 ################################################################
@@ -41,9 +41,9 @@ fi
 ################################################################
 
 if [ "$platform_os" = "Darwin" ]; then
-    sed_inplace="sed -i ''"
+  sed_inplace="sed -i ''"
 else
-    sed_inplace="sed -i"
+  sed_inplace="sed -i"
 fi
 
 ################################################################
@@ -153,45 +153,58 @@ print_help() {
 params_for_cosmovisor=""
 contain_params_for_cosmovisor=false
 while [ "$#" -gt 0 ]; do
-    if $contain_params_for_cosmovisor; then
-        params_for_cosmovisor="$params_for_cosmovisor $1"
-    else
-        case $1 in
-            --help )          print_help
-                              exit 0
-                              ;;
-            --chain-type )    shift
-                              TITAN_CHAIN_TYPE=$1
-                              ;;
-            --node-type )     shift
-                              TITAN_NODE_TYPE=$1
-                              ;;
-            --sync-type )     shift
-                              TITAN_SYNC_TYPE=$1
-                              ;;
-            --force-init )    force_init="true"
-                              ;;
-            --init-only )     init_only="true"
-                              ;;
-            --moniker )       shift
-                              TITAN_NODE_MONIKER=$1
-                              ;;
-            --ext-addr )      shift
-                              TITAN_EXTERNAL_ADDRESS=$1
-                              ;;
-            --add-seeds )     shift
-                              additional_seeds=$1
-                              ;;
-            --log )           shift
-                              TITAN_LOG=$1
-                              ;;
-            -- )              contain_params_for_cosmovisor=true
-                              ;;
-            * )               echo "Unknown parameter $1"
-                              exit 1
-        esac
-    fi
-    shift
+  if $contain_params_for_cosmovisor; then
+    params_for_cosmovisor="$params_for_cosmovisor $1"
+  else
+    case $1 in
+    --help)
+      print_help
+      exit 0
+      ;;
+    --chain-type)
+      shift
+      TITAN_CHAIN_TYPE=$1
+      ;;
+    --node-type)
+      shift
+      TITAN_NODE_TYPE=$1
+      ;;
+    --sync-type)
+      shift
+      TITAN_SYNC_TYPE=$1
+      ;;
+    --force-init)
+      force_init="true"
+      ;;
+    --init-only)
+      init_only="true"
+      ;;
+    --moniker)
+      shift
+      TITAN_NODE_MONIKER=$1
+      ;;
+    --ext-addr)
+      shift
+      TITAN_EXTERNAL_ADDRESS=$1
+      ;;
+    --add-seeds)
+      shift
+      additional_seeds=$1
+      ;;
+    --log)
+      shift
+      TITAN_LOG=$1
+      ;;
+    --)
+      contain_params_for_cosmovisor=true
+      ;;
+    *)
+      echo "Unknown parameter $1"
+      exit 1
+      ;;
+    esac
+  fi
+  shift
 done
 
 # check TITAN_NODE_MONIKER env must be not empty
@@ -250,7 +263,6 @@ if [ "$TITAN_NODE_TYPE" = "full" ] && [ "$TITAN_SYNC_TYPE" != "full" ]; then
   exit 1
 fi
 
-
 # if $TITAN_HOME/data already contains *.db => node is already initialized
 skip_init_node="false"
 if [ -d $TITAN_HOME/data/application.db ] && [ -d $TITAN_HOME/data/state.db ] && [ -d $TITAN_HOME/data/blockstore.db ]; then
@@ -260,7 +272,7 @@ if [ -d $TITAN_HOME/data/application.db ] && [ -d $TITAN_HOME/data/state.db ] &&
     echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
     echo "!!!!! NOTE: Node is already initialized with data. INITIALIZING NODE WILL BE FORCE.!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
     echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-    
+
     # ask user to confirm
     echo "Do you want to continue? (y/N)"
     read confirm
@@ -271,7 +283,7 @@ if [ -d $TITAN_HOME/data/application.db ] && [ -d $TITAN_HOME/data/state.db ] &&
   else
     skip_init_node="true"
     echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-    echo "!!!!! NOTE: Node is already initialized with data. Chain type, node type and sync type will be ignored. Initializing node will be skip.!!!!!!!!!!!!"  
+    echo "!!!!! NOTE: Node is already initialized with data. Chain type, node type and sync type will be ignored. Initializing node will be skip.!!!!!!!!!!!!"
     echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
   fi
 
@@ -325,17 +337,17 @@ config_updatable() {
 }
 
 if [ "$skip_init_node" = "true" ]; then
-################################################################
-#                 Start titand node                            #
-################################################################
+  ################################################################
+  #                 Start titand node                            #
+  ################################################################
 
   config_updatable
-      
-  # get current version of titand  
-  titand_current_version=$(cosmovisor run version 2>&1) || {    
+
+  # get current version of titand
+  titand_current_version=$(cosmovisor run version 2>&1) || {
     echo "titand version command failed: $titand_current_version"
     # if `titand_current_version` contain `error while loading shared libraries` or `Library not loaded`
-    if echo $titand_current_version | grep -q "error while loading shared libraries" || echo $titand_current_version | grep -q "Library not loaded"; then    
+    if echo $titand_current_version | grep -q "error while loading shared libraries" || echo $titand_current_version | grep -q "Library not loaded"; then
       echo " "
       echo "Fix share lib for version 2.0.0 or smaller. Copy share lib to /usr/lib/ or /usr/local/lib/"
       if [ "$platform_os" = "Darwin" ]; then
@@ -351,25 +363,25 @@ if [ "$skip_init_node" = "true" ]; then
           cp $TITAN_HOME/cosmovisor/current/lib/* /usr/lib/
         fi
       fi
-    fi    
+    fi
   }
 
   titand_current_version=$(cosmovisor run version | sed -n '2p')
-  echo "Current version of titand: $titand_current_version"  
+  echo "Current version of titand: $titand_current_version"
 
   # if params_for_titand is not empty, run cosmovisor with params
   if [ "$contain_params_for_cosmovisor" = "true" ]; then
     # if params_for_cosmovisor contain `run`, append `--home $TITAN_HOME`
     if echo $params_for_cosmovisor | grep -q "run"; then
-      params_for_cosmovisor="$params_for_cosmovisor --home $TITAN_HOME"    
-    fi    
+      params_for_cosmovisor="$params_for_cosmovisor --home $TITAN_HOME"
+    fi
     echo " "
     cosmovisor $params_for_cosmovisor
     exit 0
   elif [ "$init_only" = "true" ]; then
     exit 0
   else
-    # start 
+    # start
     echo " "
     cosmovisor run start --x-crisis-skip-assert-invariants --home $TITAN_HOME
     exit 0
@@ -441,10 +453,10 @@ mkdir -p $HOME_DATA/titan
 tar -xzf "$HOME_DATA/titan_${titand_start_version}_${platform_os}_${platform_arch}.tar.gz" -C $HOME_DATA/titan
 
 # get current version of titand
-titand_current_version=$($HOME_DATA/titan/bin/titand version 2>&1) || {  
+titand_current_version=$($HOME_DATA/titan/bin/titand version 2>&1) || {
   echo "titand version command failed: $titand_current_version"
   # if `titand_current_version` contain `error while loading shared libraries`
-  if echo $titand_current_version | grep -q "error while loading shared libraries" || echo $titand_current_version | grep -q "Library not loaded"; then    
+  if echo $titand_current_version | grep -q "error while loading shared libraries" || echo $titand_current_version | grep -q "Library not loaded"; then
     echo " "
     echo "Fix share lib for version 2.0.0 or smaller. Copy share lib to /usr/lib/ or /usr/local/lib/"
     if [ "$platform_os" = "Darwin" ]; then
@@ -465,7 +477,7 @@ titand_current_version=$($HOME_DATA/titan/bin/titand version 2>&1) || {
 
 titand_current_version=$($HOME_DATA/titan/bin/titand version)
 
-echo "Current version of titand: $titand_current_version"  
+echo "Current version of titand: $titand_current_version"
 
 ################################################################
 #                             Init node                        #
@@ -499,8 +511,8 @@ if [ "$backed_up" = "true" ]; then
   else
     echo "Warning: Cannot find priv_validator_state.json in backup folder"
   fi
-  
-  echo " "  
+
+  echo " "
 fi
 
 # copy genesis.json
@@ -519,7 +531,7 @@ $sed_inplace 's/\(global-labels = \).*/\1[[\"chain_id\", \"titan_18888-1\"]]/' $
 config_updatable
 
 # config state sync
-if [ "$TITAN_SYNC_TYPE" = "fast" ]; then  
+if [ "$TITAN_SYNC_TYPE" = "fast" ]; then
   echo "Config state sync"
 
   echo "TITAN_RPC_STATE_SYNC_ENDPOINT: $TITAN_RPC_STATE_SYNC_ENDPOINT"
@@ -541,7 +553,7 @@ if [ "$TITAN_SYNC_TYPE" = "fast" ]; then
   $sed_inplace "/^\[statesync\]$/,/^\[/ s/\(trust_height = \).*/\1$fast_sync_block_height/" $TITAN_HOME/config/config.toml
   $sed_inplace "/^\[statesync\]$/,/^\[/ s/\(trust_hash = \).*/\1\"$fast_sync_block_hash\"/" $TITAN_HOME/config/config.toml
 
-  # disable evm index 
+  # disable evm index
   $sed_inplace "/^\[json-rpc\]$/,/^\[/ s/\(enable-indexer = \).*/\1false/" $TITAN_HOME/config/app.toml
   # disable rossetta
   $sed_inplace "/^\[rosetta\]$/,/^\[/ s/\(enable = \).*/\1false/" $TITAN_HOME/config/app.toml
@@ -563,15 +575,15 @@ cosmovisor init $TITAN_HOME/cosmovisor/genesis/bin/titand
 if [ "$contain_params_for_cosmovisor" = "true" ]; then
   # if params_for_cosmovisor contain `run`, append `--home $TITAN_HOME`
   if echo $params_for_cosmovisor | grep -q "run"; then
-    params_for_cosmovisor="$params_for_cosmovisor --home $TITAN_HOME"  
-  fi    
+    params_for_cosmovisor="$params_for_cosmovisor --home $TITAN_HOME"
+  fi
   echo " "
   cosmovisor $params_for_cosmovisor
   exit 0
 elif [ "$init_only" = "true" ]; then
   exit 0
 else
-  # start 
+  # start
   echo " "
   cosmovisor run start --x-crisis-skip-assert-invariants --home $TITAN_HOME
   exit 0
