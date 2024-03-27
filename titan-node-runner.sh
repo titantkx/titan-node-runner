@@ -474,6 +474,33 @@ echo "Init node"
 $HOME_DATA/titan/bin/titand init $TITAN_NODE_MONIKER --chain-id $chain_id --home $TITAN_HOME
 echo " "
 
+if [ "$backed_up" = "true" ]; then
+  echo "Recover config and priv_validator_state.json"
+  if [ -f "$HOME_DATA/bak_$current_time/config/node_key.json" ]; then
+    echo "Recover node_key.json"
+    mkdir -p $TITAN_HOME/config
+    cp $HOME_DATA/bak_$current_time/config/node_key.json $TITAN_HOME/config/node_key.json
+  else
+    echo "Warning: Cannot find node_key.json in backup folder"
+  fi
+  if [ -f "$HOME_DATA/bak_$current_time/config/priv_validator_key.json" ]; then
+    echo "Recover priv_validator_key.json"
+    mkdir -p $TITAN_HOME/config
+    cp $HOME_DATA/bak_$current_time/config/priv_validator_key.json $TITAN_HOME/config/priv_validator_key.json
+  else
+    echo "Warning: Cannot find priv_validator_key.json in backup folder"
+  fi
+  if [ -f "$HOME_DATA/bak_$current_time/priv_validator_state.json" ]; then
+    echo "Recover priv_validator_state.json"
+    mkdir -p $TITAN_HOME/data
+    cp $HOME_DATA/bak_$current_time/priv_validator_state.json $TITAN_HOME/data/priv_validator_state.json
+  else
+    echo "Warning: Cannot find priv_validator_state.json in backup folder"
+  fi
+  
+  echo " "  
+fi
+
 # copy genesis.json
 curl -L $genesis_url -o $TITAN_HOME/config/genesis.json.gz
 echo "Extract genesis.json"
@@ -516,33 +543,6 @@ if [ "$TITAN_SYNC_TYPE" = "fast" ]; then
   $sed_inplace "/^\[json-rpc\]$/,/^\[/ s/\(enable-indexer = \).*/\1false/" $TITAN_HOME/config/app.toml
   # disable rossetta
   $sed_inplace "/^\[rosetta\]$/,/^\[/ s/\(enable = \).*/\1false/" $TITAN_HOME/config/app.toml
-fi
-
-if [ "$backed_up" = "true" ]; then
-  echo "Recover config and priv_validator_state.json"
-  if [ -f "$HOME_DATA/bak_$current_time/config/node_key.json" ]; then
-    echo "Recover node_key.json"
-    mkdir -p $TITAN_HOME/config
-    cp $HOME_DATA/bak_$current_time/config/node_key.json $TITAN_HOME/config/node_key.json
-  else
-    echo "Warning: Cannot find node_key.json in backup folder"
-  fi
-  if [ -f "$HOME_DATA/bak_$current_time/config/priv_validator_key.json" ]; then
-    echo "Recover priv_validator_key.json"
-    mkdir -p $TITAN_HOME/config
-    cp $HOME_DATA/bak_$current_time/config/priv_validator_key.json $TITAN_HOME/config/priv_validator_key.json
-  else
-    echo "Warning: Cannot find priv_validator_key.json in backup folder"
-  fi
-  if [ -f "$HOME_DATA/bak_$current_time/priv_validator_state.json" ]; then
-    echo "Recover priv_validator_state.json"
-    mkdir -p $TITAN_HOME/data
-    cp $HOME_DATA/bak_$current_time/priv_validator_state.json $TITAN_HOME/data/priv_validator_state.json
-  else
-    echo "Warning: Cannot find priv_validator_state.json in backup folder"
-  fi
-  
-  echo " "  
 fi
 
 # Create cosmovisor folder
