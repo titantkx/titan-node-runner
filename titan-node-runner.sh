@@ -405,6 +405,9 @@ if [ -f $TITAN_HOME/data/priv_validator_state.json ]; then
   cp $TITAN_HOME/data/priv_validator_state.json $HOME_DATA/bak_$current_time/priv_validator_state.json
 fi
 
+# cleanup old download titan
+rm -rf $HOME_DATA/titan
+
 ################################################################
 #                 Download start titand bin                    #
 ################################################################
@@ -432,7 +435,7 @@ curl -L "https://github.com/titantkx/titan/releases/download/v${titand_start_ver
 
 # download titand bin from `https://github.com/titantkx/titan/releases/download/v<version>/titan_<version>_<os>_<arch>.tar.gz`
 echo "Download titand archive"
-curl -L "https://github.com/titantkx/titan/releases/download/v${titand_start_version}/titan_${titand_start_version}_${platform_os}_${platform_arch}.tar.gz" -o $HOME_DATA/"titan_${titand_start_version}_${platform_os}_${platform_arch}.tar.gz"
+curl -L "https://github.com/titantkx/titan/releases/download/v${titand_start_version}/titan_${titand_start_version}_${platform_os}_${platform_arch}.tar.gz" -o "${HOME_DATA}/titan_${titand_start_version}_${platform_os}_${platform_arch}.tar.gz"
 
 # verify checksums
 cd $HOME_DATA
@@ -481,7 +484,6 @@ echo "Current version of titand: $titand_current_version"
 
 # clean up old data
 rm -rf $TITAN_HOME
-rm -rf $HOME_DATA/titan
 
 # init node
 echo "Init node"
