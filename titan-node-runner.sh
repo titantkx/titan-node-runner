@@ -360,10 +360,12 @@ fi
 ####################################################################################
 
 # backup $TITAN_HOME/config and $TITAN_HOME/data/priv_validator_state.json if exists
+backed_up="false"
 current_time=$(date "+%Y.%m.%d-%H.%M.%S")
 if [ -d $TITAN_HOME/config ]; then
   mkdir -p $HOME_DATA/bak_$current_time
   cp -R $TITAN_HOME/config $HOME_DATA/bak_$current_time/config
+  backed_up="true"
 fi
 if [ -f $TITAN_HOME/data/priv_validator_state.json ]; then
   mkdir -p $HOME_DATA/bak_$current_time
@@ -497,7 +499,7 @@ if [ "$TITAN_SYNC_TYPE" = "fast" ]; then
   $sed_inplace "/^\[rosetta\]$/,/^\[/ s/\(enable = \).*/\1false/" $TITAN_HOME/config/app.toml
 fi
 
-if [ "$reinit_node" = "true" ]; then
+if [ "$backed_up" = "true" ]; then
   echo "Recover node key"
   cp $HOME_DATA/bak_$current_time/config/node_key.json $TITAN_HOME/config/node_key.json
   cp $HOME_DATA/bak_$current_time/config/priv_validator_key.json $TITAN_HOME/config/priv_validator_key.json
