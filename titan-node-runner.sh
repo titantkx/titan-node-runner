@@ -27,7 +27,7 @@ if [ "$platform_arch" != "amd64" ] && [ "$platform_arch" != "arm64" ]; then
 fi
 
 # get dir of script
-SCRIPT_DIR=$(dirname $0)
+SCRIPT_DIR=$(dirname "$0")
 CURRENT_DIR=$(pwd)
 
 # check if have `sudo`
@@ -119,7 +119,7 @@ echo "TITAN_HOME: $TITAN_HOME"
 
 export DAEMON_NAME=titand
 echo "DAEMON_NAME: $DAEMON_NAME"
-export DAEMON_HOME=$TITAN_HOME
+export DAEMON_HOME="$TITAN_HOME"
 echo "DAEMON_HOME: $DAEMON_HOME"
 if [ -z "$DAEMON_RESTART_AFTER_UPGRADE" ]; then
   export DAEMON_RESTART_AFTER_UPGRADE=true
@@ -146,7 +146,6 @@ print_help() {
   echo "  --log <info|debug|error|warn>  Log level of node"
   echo "  --help  Print help"
   echo "  -- Pass all following arguments to cosmovisor"
-  exit 1
 }
 
 # parse from params
@@ -265,7 +264,7 @@ fi
 
 # if $TITAN_HOME/data already contains *.db => node is already initialized
 skip_init_node="false"
-if [ -d $TITAN_HOME/data/application.db ] && [ -d $TITAN_HOME/data/state.db ] && [ -d $TITAN_HOME/data/blockstore.db ]; then
+if [ -d "${TITAN_HOME}/data/application.db" ] && [ -d "${TITAN_HOME}/data/state.db" ] && [ -d "${TITAN_HOME}/data/blockstore.db" ]; then
 
   if [ "$force_init" = "true" ]; then
     skip_init_node="false"
@@ -275,7 +274,7 @@ if [ -d $TITAN_HOME/data/application.db ] && [ -d $TITAN_HOME/data/state.db ] &&
 
     # ask user to confirm
     echo "Do you want to continue? (y/N)"
-    read confirm
+    read -r confirm
     if [ "$confirm" != "y" ] && [ "$confirm" != "Y" ]; then
       echo "Exit"
       exit 0
@@ -315,7 +314,7 @@ elif [ "$TITAN_CHAIN_TYPE" = "testnet" ]; then
   fi
 fi
 
-if [ ! -z "$additional_seeds" ]; then
+if [ -n "$additional_seeds" ]; then
   TITAN_SEEDS="$TITAN_SEEDS,$additional_seeds"
 fi
 
@@ -327,13 +326,13 @@ config_updatable() {
   echo "TITAN_LOG: $TITAN_LOG"
 
   # config moniker in config.toml
-  $sed_inplace "s/\(moniker = \).*/\1\"$TITAN_NODE_MONIKER\"/" $TITAN_HOME/config/config.toml
+  $sed_inplace "s/\(moniker = \).*/\1\"$TITAN_NODE_MONIKER\"/" "${TITAN_HOME}/config/config.toml"
   # config TITAN_EXTERNAL_ADDRESS in config.toml
-  $sed_inplace "s/\(TITAN_EXTERNAL_ADDRESS = \).*/\1\"$TITAN_EXTERNAL_ADDRESS\"/" $TITAN_HOME/config/config.toml
+  $sed_inplace "s/\(TITAN_EXTERNAL_ADDRESS = \).*/\1\"$TITAN_EXTERNAL_ADDRESS\"/" "${TITAN_HOME}/config/config.toml"
   # config log
-  $sed_inplace "s/\(log_level = \).*/\1\"$TITAN_LOG\"/" $TITAN_HOME/config/config.toml
+  $sed_inplace "s/\(log_level = \).*/\1\"$TITAN_LOG\"/" "${TITAN_HOME}/config/config.toml"
   # config seeds
-  $sed_inplace "s/\(seeds = \).*/\1\"$TITAN_SEEDS\"/" $TITAN_HOME/config/config.toml
+  $sed_inplace "s/\(seeds = \).*/\1\"$TITAN_SEEDS\"/" "${TITAN_HOME}/config/config.toml"
 }
 
 if [ "$skip_init_node" = "true" ]; then
@@ -347,20 +346,20 @@ if [ "$skip_init_node" = "true" ]; then
   titand_current_version=$(cosmovisor run version 2>&1) || {
     echo "titand version command failed: $titand_current_version"
     # if `titand_current_version` contain `error while loading shared libraries` or `Library not loaded`
-    if echo $titand_current_version | grep -q "error while loading shared libraries" || echo $titand_current_version | grep -q "Library not loaded"; then
+    if echo "$titand_current_version" | grep -q "error while loading shared libraries" || echo "$titand_current_version" | grep -q "Library not loaded"; then
       echo " "
       echo "Fix share lib for version 2.0.0 or smaller. Copy share lib to /usr/lib/ or /usr/local/lib/"
       if [ "$platform_os" = "Darwin" ]; then
         if [ "$have_sudo" = "true" ]; then
-          sudo cp $TITAN_HOME/cosmovisor/current/lib/* /usr/local/lib/
+          sudo cp "$TITAN_HOME"/cosmovisor/current/lib/* /usr/local/lib/
         else
-          cp $TITAN_HOME/cosmovisor/current/lib/* /usr/local/lib/
+          cp "$TITAN_HOME"/cosmovisor/current/lib/* /usr/local/lib/
         fi
       else
         if [ "$have_sudo" = "true" ]; then
-          sudo cp $TITAN_HOME/cosmovisor/current/lib/* /usr/lib/
+          sudo cp "$TITAN_HOME"/cosmovisor/current/lib/* /usr/lib/
         else
-          cp $TITAN_HOME/cosmovisor/current/lib/* /usr/lib/
+          cp "$TITAN_HOME"/cosmovisor/current/lib/* /usr/lib/
         fi
       fi
     fi
@@ -372,10 +371,11 @@ if [ "$skip_init_node" = "true" ]; then
   # if params_for_titand is not empty, run cosmovisor with params
   if [ "$contain_params_for_cosmovisor" = "true" ]; then
     # if params_for_cosmovisor contain `run`, append `--home $TITAN_HOME`
-    if echo $params_for_cosmovisor | grep -q "run"; then
+    if echo "$params_for_cosmovisor" | grep -q "run"; then
       params_for_cosmovisor="$params_for_cosmovisor --home $TITAN_HOME"
     fi
     echo " "
+    # shellcheck disable=SC2086
     cosmovisor $params_for_cosmovisor
     exit 0
   elif [ "$init_only" = "true" ]; then
@@ -383,7 +383,7 @@ if [ "$skip_init_node" = "true" ]; then
   else
     # start
     echo " "
-    cosmovisor run start --x-crisis-skip-assert-invariants --home $TITAN_HOME
+    cosmovisor run start --x-crisis-skip-assert-invariants --home "$TITAN_HOME"
     exit 0
   fi
 fi
@@ -395,18 +395,18 @@ fi
 # backup $TITAN_HOME/config and $TITAN_HOME/data/priv_validator_state.json if exists
 backed_up="false"
 current_time=$(date "+%Y.%m.%d-%H.%M.%S")
-if [ -d $TITAN_HOME/config ]; then
-  mkdir -p $HOME_DATA/bak_$current_time
-  cp -R $TITAN_HOME/config $HOME_DATA/bak_$current_time/config
+if [ -d "$TITAN_HOME/config" ]; then
+  mkdir -p "$HOME_DATA/bak_$current_time"
+  cp -R "$TITAN_HOME/config" "$HOME_DATA/bak_$current_time"/config
   backed_up="true"
 fi
-if [ -f $TITAN_HOME/data/priv_validator_state.json ]; then
-  mkdir -p $HOME_DATA/bak_$current_time
-  cp $TITAN_HOME/data/priv_validator_state.json $HOME_DATA/bak_$current_time/priv_validator_state.json
+if [ -f "$TITAN_HOME/data/priv_validator_state.json" ]; then
+  mkdir -p "$HOME_DATA/bak_$current_time"
+  cp "${TITAN_HOME}/data/priv_validator_state.json" "${HOME_DATA}/bak_${current_time}/priv_validator_state.json"
 fi
 
 # cleanup old download titan
-rm -rf $HOME_DATA/titan
+rm -rf "${HOME_DATA}/titan"
 
 ################################################################
 #                 Download start titand bin                    #
@@ -420,10 +420,10 @@ if [ "$TITAN_SYNC_TYPE" = "full" ]; then
   fi
 elif [ "$TITAN_SYNC_TYPE" = "fast" ]; then
   # get current version of rpc node from $TITAN_RPC_ENDPOINT/abci_info
-  current_abci_info=$(curl -s $TITAN_RPC_ENDPOINT/abci_info)
+  current_abci_info=$(curl -s "${TITAN_RPC_ENDPOINT}/abci_info")
   # get current version of rpc node
-  titand_start_version=$(echo $current_abci_info | jq -r '.result.response.version')
-  last_block_height=$(echo $current_abci_info | jq -r '.result.response.last_block_height')
+  titand_start_version=$(echo "$current_abci_info" | jq -r '.result.response.version')
+  last_block_height=$(echo "$current_abci_info" | jq -r '.result.response.last_block_height')
 fi
 
 echo "Current version of titand: $titand_start_version"
@@ -431,50 +431,50 @@ echo "Last block height: $last_block_height"
 
 # download checksums.txt
 echo "Download checksums.txt"
-curl -L "https://github.com/titantkx/titan/releases/download/v${titand_start_version}/checksums.txt" -o $HOME_DATA/checksums.txt
+curl -L "https://github.com/titantkx/titan/releases/download/v${titand_start_version}/checksums.txt" -o "$HOME_DATA/checksums.txt"
 
 # download titand bin from `https://github.com/titantkx/titan/releases/download/v<version>/titan_<version>_<os>_<arch>.tar.gz`
 echo "Download titand archive"
 curl -L "https://github.com/titantkx/titan/releases/download/v${titand_start_version}/titan_${titand_start_version}_${platform_os}_${platform_arch}.tar.gz" -o "${HOME_DATA}/titan_${titand_start_version}_${platform_os}_${platform_arch}.tar.gz"
 
 # verify checksums
-cd $HOME_DATA
+cd "$HOME_DATA"
 # Extract the line for the specific file from checksums.txt
 checksum_line=$(grep "titan_${titand_start_version}_${platform_os}_${platform_arch}.tar.gz" checksums.txt)
 echo "Checksum info: $checksum_line"
-echo $checksum_line | sha256sum --strict -wc -
+echo "$checksum_line" | sha256sum --strict -wc -
 echo "Download titand archive successfully"
-cd $CURRENT_DIR
+cd "$CURRENT_DIR"
 
 echo "Extract titand archive"
 
-mkdir -p $HOME_DATA/titan
-tar -xzf "$HOME_DATA/titan_${titand_start_version}_${platform_os}_${platform_arch}.tar.gz" -C $HOME_DATA/titan
+mkdir -p "$HOME_DATA/titan"
+tar -xzf "$HOME_DATA/titan_${titand_start_version}_${platform_os}_${platform_arch}.tar.gz" -C "$HOME_DATA"/titan
 
 # get current version of titand
-titand_current_version=$($HOME_DATA/titan/bin/titand version 2>&1) || {
+titand_current_version=$("$HOME_DATA/titan/bin/titand" version 2>&1) || {
   echo "titand version command failed: $titand_current_version"
   # if `titand_current_version` contain `error while loading shared libraries`
-  if echo $titand_current_version | grep -q "error while loading shared libraries" || echo $titand_current_version | grep -q "Library not loaded"; then
+  if echo "$titand_current_version" | grep -q "error while loading shared libraries" || echo "$titand_current_version" | grep -q "Library not loaded"; then
     echo " "
     echo "Fix share lib for version 2.0.0 or smaller. Copy share lib to /usr/lib/ or /usr/local/lib/"
     if [ "$platform_os" = "Darwin" ]; then
       if [ "$have_sudo" = "true" ]; then
-        sudo cp $HOME_DATA/titan/lib/* /usr/local/lib/
+        sudo cp "$HOME_DATA"/titan/lib/* /usr/local/lib/
       else
-        cp $HOME_DATA/titan/lib/* /usr/local/lib/
+        cp "$HOME_DATA"/titan/lib/* /usr/local/lib/
       fi
     else
       if [ "$have_sudo" = "true" ]; then
-        sudo cp $HOME_DATA/titan/lib/* /usr/lib/
+        sudo cp "$HOME_DATA"/titan/lib/* /usr/lib/
       else
-        cp $HOME_DATA/titan/lib/* /usr/lib/
+        cp "$HOME_DATA"/titan/lib/* /usr/lib/
       fi
     fi
   fi
 }
 
-titand_current_version=$($HOME_DATA/titan/bin/titand version)
+titand_current_version=$("$HOME_DATA"/titan/bin/titand version)
 
 echo "Current version of titand: $titand_current_version"
 
@@ -483,33 +483,33 @@ echo "Current version of titand: $titand_current_version"
 ################################################################
 
 # clean up old data
-rm -rf $TITAN_HOME
+rm -rf "$TITAN_HOME"
 
 # init node
 echo "Init node"
-$HOME_DATA/titan/bin/titand init $TITAN_NODE_MONIKER --chain-id $chain_id --home $TITAN_HOME
+"$HOME_DATA/titan/bin/titand" init "$TITAN_NODE_MONIKER" --chain-id "$chain_id" --home "$TITAN_HOME"
 echo " "
 
 if [ "$backed_up" = "true" ]; then
   echo "Recover config and priv_validator_state.json"
   if [ -f "$HOME_DATA/bak_$current_time/config/node_key.json" ]; then
     echo "Recover node_key.json"
-    mkdir -p $TITAN_HOME/config
-    cp $HOME_DATA/bak_$current_time/config/node_key.json $TITAN_HOME/config/node_key.json
+    mkdir -p "$TITAN_HOME/config"
+    cp "$HOME_DATA/bak_${current_time}/config/node_key.json" "$TITAN_HOME/config/node_key.json"
   else
     echo "Warning: Cannot find node_key.json in backup folder"
   fi
   if [ -f "$HOME_DATA/bak_$current_time/config/priv_validator_key.json" ]; then
     echo "Recover priv_validator_key.json"
-    mkdir -p $TITAN_HOME/config
-    cp $HOME_DATA/bak_$current_time/config/priv_validator_key.json $TITAN_HOME/config/priv_validator_key.json
+    mkdir -p "$TITAN_HOME/config"
+    cp "$HOME_DATA/bak_$current_time/config/priv_validator_key.json" "$TITAN_HOME/config/priv_validator_key.json"
   else
     echo "Warning: Cannot find priv_validator_key.json in backup folder"
   fi
   if [ -f "$HOME_DATA/bak_$current_time/priv_validator_state.json" ]; then
     echo "Recover priv_validator_state.json"
-    mkdir -p $TITAN_HOME/data
-    cp $HOME_DATA/bak_$current_time/priv_validator_state.json $TITAN_HOME/data/priv_validator_state.json
+    mkdir -p "$TITAN_HOME/data"
+    cp "$HOME_DATA/bak_$current_time/priv_validator_state.json" "$TITAN_HOME/data/priv_validator_state.json"
   else
     echo "Warning: Cannot find priv_validator_state.json in backup folder"
   fi
@@ -518,17 +518,17 @@ if [ "$backed_up" = "true" ]; then
 fi
 
 # copy genesis.json
-curl -L $genesis_url -o $TITAN_HOME/config/genesis.json.gz
+curl -L "$genesis_url" -o "$TITAN_HOME/config/genesis.json.gz"
 echo "Extract genesis.json"
-gzip -fd $TITAN_HOME/config/genesis.json.gz
+gzip -fd "$TITAN_HOME/config/genesis.json.gz"
 
 # copy coresponse config_tmp
-cp $SCRIPT_DIR/configs_tmp/$TITAN_NODE_TYPE/app.toml $TITAN_HOME/config/app.toml
-cp $SCRIPT_DIR/configs_tmp/$TITAN_NODE_TYPE/config.toml $TITAN_HOME/config/config.toml
+cp "$SCRIPT_DIR/configs_tmp/$TITAN_NODE_TYPE/app.toml" "$TITAN_HOME/config/app.toml"
+cp "$SCRIPT_DIR/configs_tmp/$TITAN_NODE_TYPE/config.toml" "$TITAN_HOME/config/config.toml"
 
 # adjust app.toml and config.toml
 echo "Adjust app.toml and config.toml"
-$sed_inplace 's/\(global-labels = \).*/\1[[\"chain_id\", \"titan_18888-1\"]]/' $TITAN_HOME/config/app.toml
+$sed_inplace "s/\(global-labels = \).*/\1[[\"chain_id\", \"${chain_id}\"]]/" "$TITAN_HOME/config/app.toml"
 
 config_updatable
 
@@ -538,48 +538,49 @@ if [ "$TITAN_SYNC_TYPE" = "fast" ]; then
 
   echo "TITAN_RPC_STATE_SYNC_ENDPOINT: $TITAN_RPC_STATE_SYNC_ENDPOINT"
 
-  $sed_inplace "/^\[statesync\]$/,/^\[/ s/\(enable = \).*/\1true/" $TITAN_HOME/config/config.toml
-  TITAN_RPC_STATE_SYNC_ENDPOINT_REGEX=$(echo $TITAN_RPC_STATE_SYNC_ENDPOINT | sed 's/\//\\\//g')
-  $sed_inplace "/^\[statesync\]$/,/^\[/ s/\(rpc_servers = \).*/\1\"$TITAN_RPC_STATE_SYNC_ENDPOINT_REGEX\"/" $TITAN_HOME/config/config.toml
+  $sed_inplace "/^\[statesync\]$/,/^\[/ s/\(enable = \).*/\1true/" "$TITAN_HOME/config/config.toml"
+  TITAN_RPC_STATE_SYNC_ENDPOINT_REGEX=$(echo "$TITAN_RPC_STATE_SYNC_ENDPOINT" | sed 's/\//\\\//g')
+  $sed_inplace "/^\[statesync\]$/,/^\[/ s/\(rpc_servers = \).*/\1\"$TITAN_RPC_STATE_SYNC_ENDPOINT_REGEX\"/" "$TITAN_HOME/config/config.toml"
 
-  fast_sync_block_height=$((($last_block_height / 1000) * 1000))
+  fast_sync_block_height=$(((last_block_height / 1000) * 1000))
 
   # get hash of block at fast_sync_block_height
-  fast_sync_block_hash=$(curl -s $TITAN_RPC_ENDPOINT/block?height=$fast_sync_block_height | jq -r '.result.block_id.hash')
+  fast_sync_block_hash=$(curl -s "$TITAN_RPC_ENDPOINT/block?height=$fast_sync_block_height" | jq -r '.result.block_id.hash')
   if [ -z "$fast_sync_block_hash" ]; then
     echo "Cannot get block hash at height $fast_sync_block_height"
     exit 1
   fi
 
   echo "Fast sync block height: $fast_sync_block_height - hash: $fast_sync_block_hash"
-  $sed_inplace "/^\[statesync\]$/,/^\[/ s/\(trust_height = \).*/\1$fast_sync_block_height/" $TITAN_HOME/config/config.toml
-  $sed_inplace "/^\[statesync\]$/,/^\[/ s/\(trust_hash = \).*/\1\"$fast_sync_block_hash\"/" $TITAN_HOME/config/config.toml
+  $sed_inplace "/^\[statesync\]$/,/^\[/ s/\(trust_height = \).*/\1$fast_sync_block_height/" "$TITAN_HOME/config/config.toml"
+  $sed_inplace "/^\[statesync\]$/,/^\[/ s/\(trust_hash = \).*/\1\"$fast_sync_block_hash\"/" "$TITAN_HOME/config/config.toml"
 
   # disable evm index
-  $sed_inplace "/^\[json-rpc\]$/,/^\[/ s/\(enable-indexer = \).*/\1false/" $TITAN_HOME/config/app.toml
+  $sed_inplace "/^\[json-rpc\]$/,/^\[/ s/\(enable-indexer = \).*/\1false/" "$TITAN_HOME/config/app.toml"
   # disable rossetta
-  $sed_inplace "/^\[rosetta\]$/,/^\[/ s/\(enable = \).*/\1false/" $TITAN_HOME/config/app.toml
+  $sed_inplace "/^\[rosetta\]$/,/^\[/ s/\(enable = \).*/\1false/" "$TITAN_HOME/config/app.toml"
 fi
 
 # Create cosmovisor folder
 echo "Create cosmovisor folder"
-mkdir -p $TITAN_HOME/cosmovisor
-mkdir -p $TITAN_HOME/cosmovisor/genesis
-mkdir -p $TITAN_HOME/cosmovisor/upgrades
+mkdir -p "$TITAN_HOME/cosmovisor"
+mkdir -p "$TITAN_HOME/cosmovisor/genesis"
+mkdir -p "$TITAN_HOME/cosmovisor/upgrades"
 
 # Copy titand binary to cosmovisor folder
 echo "Copy titand binary to cosmovisor folder"
-cp -R $HOME_DATA/titan/* $TITAN_HOME/cosmovisor/genesis/
+cp -R "$HOME_DATA"/titan/* "$TITAN_HOME/cosmovisor/genesis/"
 
-cosmovisor init $TITAN_HOME/cosmovisor/genesis/bin/titand
+cosmovisor init "$TITAN_HOME/cosmovisor/genesis/bin/titand"
 
 # if contain_params_for_cosmovisor is not empty, run cosmovisor with params
 if [ "$contain_params_for_cosmovisor" = "true" ]; then
   # if params_for_cosmovisor contain `run`, append `--home $TITAN_HOME`
-  if echo $params_for_cosmovisor | grep -q "run"; then
+  if echo "$params_for_cosmovisor" | grep -q "run"; then
     params_for_cosmovisor="$params_for_cosmovisor --home $TITAN_HOME"
   fi
   echo " "
+  # shellcheck disable=SC2086
   cosmovisor $params_for_cosmovisor
   exit 0
 elif [ "$init_only" = "true" ]; then
@@ -587,6 +588,6 @@ elif [ "$init_only" = "true" ]; then
 else
   # start
   echo " "
-  cosmovisor run start --x-crisis-skip-assert-invariants --home $TITAN_HOME
+  cosmovisor run start --x-crisis-skip-assert-invariants --home "$TITAN_HOME"
   exit 0
 fi
