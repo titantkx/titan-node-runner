@@ -449,7 +449,7 @@ cd "$CURRENT_DIR"
 echo "Extract titand archive"
 
 mkdir -p "$HOME_DATA/titan"
-tar -xzf "$HOME_DATA/titan_${titand_start_version}_${platform_os}_${platform_arch}.tar.gz" -C "$HOME_DATA"/titan
+tar -xzf "$HOME_DATA/titan_${titand_start_version}_${platform_os}_${platform_arch}.tar.gz" -C "$HOME_DATA/titan"
 
 # get current version of titand
 titand_current_version=$("$HOME_DATA/titan/bin/titand" version 2>&1) || {
