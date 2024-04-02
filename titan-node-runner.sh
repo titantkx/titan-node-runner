@@ -333,6 +333,21 @@ config_updatable() {
   $sed_inplace "s/\(log_level = \).*/\1\"$TITAN_LOG\"/" "${TITAN_HOME}/config/config.toml"
   # config seeds
   $sed_inplace "s/\(seeds = \).*/\1\"$TITAN_SEEDS\"/" "${TITAN_HOME}/config/config.toml"
+  # config persistent_peers
+  if [ -n "$TITAN_PERSISTENT_PEERS" ]; then
+    echo "TITAN_PERSISTENT_PEERS: $TITAN_PERSISTENT_PEERS"
+    $sed_inplace "s/\(persistent_peers = \).*/\1\"$TITAN_PERSISTENT_PEERS\"/" "${TITAN_HOME}/config/config.toml"
+  fi
+  # config unconditional_peer_ids
+  if [ -n "$TITAN_UNCONDITIONAL_PEER_IDS" ]; then
+    echo "TITAN_UNCONDITIONAL_PEER_IDS: $TITAN_UNCONDITIONAL_PEER_IDS"
+    $sed_inplace "s/\(unconditional_peer_ids = \).*/\1\"$TITAN_UNCONDITIONAL_PEER_IDS\"/" "${TITAN_HOME}/config/config.toml"
+  fi
+  # config private_peer_ids
+  if [ -n "$TITAN_PRIVATE_PEER_IDS" ]; then
+    echo "TITAN_PRIVATE_PEER_IDS: $TITAN_PRIVATE_PEER_IDS"
+    $sed_inplace "s/\(private_peer_ids = \).*/\1\"$TITAN_PRIVATE_PEER_IDS\"/" "${TITAN_HOME}/config/config.toml"
+  fi
 }
 
 if [ "$skip_init_node" = "true" ]; then
