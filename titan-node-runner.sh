@@ -327,8 +327,8 @@ config_updatable() {
 
   # config moniker in config.toml
   $sed_inplace "s/\(moniker = \).*/\1\"$TITAN_NODE_MONIKER\"/" "${TITAN_HOME}/config/config.toml"
-  # config TITAN_EXTERNAL_ADDRESS in config.toml
-  $sed_inplace "s/\(TITAN_EXTERNAL_ADDRESS = \).*/\1\"$TITAN_EXTERNAL_ADDRESS\"/" "${TITAN_HOME}/config/config.toml"
+  # config external_address in config.toml
+  $sed_inplace "s/\(external_address = \).*/\1\"$TITAN_EXTERNAL_ADDRESS\"/" "${TITAN_HOME}/config/config.toml"
   # config log
   $sed_inplace "s/\(log_level = \).*/\1\"$TITAN_LOG\"/" "${TITAN_HOME}/config/config.toml"
   # config seeds
