@@ -421,7 +421,7 @@ if [ -f "$TITAN_HOME/data/priv_validator_state.json" ]; then
 fi
 
 # cleanup old download titan
-rm -rf "${HOME_DATA}/titan"
+rm -rf "${HOME_DATA}/titan_download"
 
 ################################################################
 #                 Download start titand bin                    #
@@ -463,11 +463,11 @@ cd "$CURRENT_DIR"
 
 echo "Extract titand archive"
 
-mkdir -p "$HOME_DATA/titan"
-tar -xzf "$HOME_DATA/titan_${titand_start_version}_${platform_os}_${platform_arch}.tar.gz" -C "$HOME_DATA/titan"
+mkdir -p "$HOME_DATA/titan_download"
+tar -xzf "$HOME_DATA/titan_${titand_start_version}_${platform_os}_${platform_arch}.tar.gz" -C "$HOME_DATA/titan_download"
 
 # get current version of titand
-titand_current_version=$("$HOME_DATA/titan/bin/titand" version 2>&1) || {
+titand_current_version=$("$HOME_DATA/titan_download/bin/titand" version 2>&1) || {
   echo "titand version command failed: $titand_current_version"
   # if `titand_current_version` contain `error while loading shared libraries`
   if echo "$titand_current_version" | grep -q "error while loading shared libraries" || echo "$titand_current_version" | grep -q "Library not loaded"; then
@@ -475,21 +475,21 @@ titand_current_version=$("$HOME_DATA/titan/bin/titand" version 2>&1) || {
     echo "Fix share lib for version 2.0.0 or smaller. Copy share lib to /usr/lib/ or /usr/local/lib/"
     if [ "$platform_os" = "Darwin" ]; then
       if [ "$have_sudo" = "true" ]; then
-        sudo cp "$HOME_DATA"/titan/lib/* /usr/local/lib/
+        sudo cp "$HOME_DATA"/titan_download/lib/* /usr/local/lib/
       else
-        cp "$HOME_DATA"/titan/lib/* /usr/local/lib/
+        cp "$HOME_DATA"/titan_download/lib/* /usr/local/lib/
       fi
     else
       if [ "$have_sudo" = "true" ]; then
-        sudo cp "$HOME_DATA"/titan/lib/* /usr/lib/
+        sudo cp "$HOME_DATA"/titan_download/lib/* /usr/lib/
       else
-        cp "$HOME_DATA"/titan/lib/* /usr/lib/
+        cp "$HOME_DATA"/titan_download/lib/* /usr/lib/
       fi
     fi
   fi
 }
 
-titand_current_version=$("$HOME_DATA"/titan/bin/titand version)
+titand_current_version=$("$HOME_DATA"/titan_download/bin/titand version)
 
 echo "Current version of titand: $titand_current_version"
 
@@ -502,7 +502,7 @@ rm -rf "$TITAN_HOME"
 
 # init node
 echo "Init node"
-"$HOME_DATA/titan/bin/titand" init "$TITAN_NODE_MONIKER" --chain-id "$chain_id" --home "$TITAN_HOME"
+"$HOME_DATA/titan_download/bin/titand" init "$TITAN_NODE_MONIKER" --chain-id "$chain_id" --home "$TITAN_HOME"
 echo " "
 
 if [ "$backed_up" = "true" ]; then
@@ -584,7 +584,7 @@ mkdir -p "$TITAN_HOME/cosmovisor/upgrades"
 
 # Copy titand binary to cosmovisor folder
 echo "Copy titand binary to cosmovisor folder"
-cp -R "$HOME_DATA"/titan/* "$TITAN_HOME/cosmovisor/genesis/"
+cp -R "$HOME_DATA"/titan_download/* "$TITAN_HOME/cosmovisor/genesis/"
 
 cosmovisor init "$TITAN_HOME/cosmovisor/genesis/bin/titand"
 
