@@ -81,7 +81,13 @@ Any parameter after `--` will be passed to cosmovisor command. For example:
 You can use script to init node config only by using `--init-only` option. This will init node config and exit.
 
 ```bash
-./titan-node-runner.sh --moniker test-2 --ext-addr 0.0.0.0:26656 --chain-type testnet --node-type validator --sync-type full --log info --init-only
+./titan-node-runner.sh \
+    --moniker test-2 \
+    --ext-addr 0.0.0.0:26656 \
+    --chain-type testnet \
+    --node-type validator \
+    --sync-type full \
+    --log info --init-only
 ```
 
 Command will also output value of Environment variable that you can use to start node by using `cosmovisor` command directly.
