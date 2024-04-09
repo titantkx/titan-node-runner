@@ -1,5 +1,36 @@
 # This repo contains script and docker file that support quickly startup Titan node belong with cosmovisor
 
+## Requirement
+
+Some programs is recommended to install in machine before using this script
+
+- fish
+- htop
+- git
+- jq
+- go
+- curl
+- coreutil
+- gzip
+- tar
+
+```bash
+sudo apt update -y && \
+sudo apt install -y fish htop git jq curl coreutils tar
+```
+
+```bash
+curl -OL https://go.dev/dl/go1.21.0.linux-amd64.tar.gz && \
+sudo tar -xvf go1.21.0.linux-amd64.tar.gz -C /usr/local
+```
+
+```bash
+export PATH=$PATH:/usr/local/go/bin && \
+export PATH=$PATH:$(go env GOPATH)/bin && \
+echo "export PATH=\$PATH:/usr/local/go/bin:$(go env GOPATH)/bin" >> $HOME/.profile && \
+go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@v1.5.0
+```
+
 ## Run with docker compose
 
 Adjust `docker-compose.yml` file to chose type of node you want to run. Then run the following command to start the node. All data of node will be stored at `./data` folder.
@@ -32,7 +63,7 @@ This command will run titan node directly on your machine. All node data will be
 - `--sync-type`: Sync type of node, support `full`, `fast`
 - `--moniker`: Moniker of node
 - `--ext-addr`: External address of node
-- `--add-seeds`: Add more seeds to node config. EX: 80fbc7606d7d8799825b7b44a0b4d53342d92211@ec2-val-1.ap-southeast-1.titan-testnet.internal:26656
+- `--add-seeds`: Add more seeds to node config. EX: <80fbc7606d7d8799825b7b44a0b4d53342d92211@ec2-val-1.ap-southeast-1.titan-testnet.internal>:26656
 - `--log`: Log level of node, support `info`, `warn`, `error`, `debug`
 - `--force-init`: (WARNING) Force to init node data. This will clear all current data of node and init new one (it will try backup and restore node_key).
 - `--init-only`: Only init node data, do not run node
