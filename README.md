@@ -44,7 +44,7 @@ docker-compose up -d
 Same as `docker compose` all data of node will be store at `./data` folder depend on your mount option in command.
 
 ```bash
-docker run --rm -it -v ./data:/root/data titantkx/titan-node-runner:1.0.0 --chain-type mainnet --node-type sentry --sync-type full --moniker test-node --ext-addr "0.0.0.0:26656" --log warn
+docker run --rm -it -v ./data:/root/data titantkx/titan-node-runner:1.2.3 --chain-type mainnet --node-type sentry --sync-type full --moniker test-node --ext-addr "0.0.0.0:26656" --log warn
 ```
 
 ## Run without docker (direct on machine)
