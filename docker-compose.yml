@@ -25,7 +25,7 @@ services:
     environment:
       - TITAN_NODE_MONIKER=test-node
       - TITAN_LOG=info
-      - TITAN_EXTERNAL_ADDRESS="0.0.0.0:26656"
+      - TITAN_EXTERNAL_ADDRESS=0.0.0.0:26656
       - TITAN_SEEDS=
       - TITAN_RPC_ENDPOINT=
       - TITAN_RPC_STATE_SYNC_ENDPOINT=
