@@ -292,7 +292,7 @@ if [ "$TITAN_CHAIN_TYPE" = "mainnet" ]; then
   chain_id="titan_18888-1"
   genesis_url="https://github.com/titantkx/titan-mainnet/raw/main/public/genesis.json.gz"
   if [ -z "$TITAN_SEEDS" ]; then
-    TITAN_SEEDS="bee5ef5680cf90fe40d6cde872cdc52e53c8338d@titan-p2p-seed-1.titanlab.io:26656,cf2f46da018e9b61c2db74012bd930d292478bb6@titan-p2p-1.titanlab.io:26656,0538c914eccc67a335eb64d99406c71ba7b110ca@titan-p2p-2.titanlab.io:26656"
+    TITAN_SEEDS="bee5ef5680cf90fe40d6cde872cdc52e53c8338d@titan-p2p-seed-1.titanlab.io:26656,a7e03c50f9b85ac2c9488d20913a37c2d1a9361c@titan-p2p-seed-1-seoul.titanlab.io:26656"
   fi
   if [ -z "$TITAN_RPC_ENDPOINT" ]; then
     TITAN_RPC_ENDPOINT="https://titan-rpc.titanlab.io:443"
