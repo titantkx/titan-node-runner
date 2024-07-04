@@ -262,6 +262,10 @@ if [ "$TITAN_NODE_TYPE" = "full" ] && [ "$TITAN_SYNC_TYPE" != "full" ]; then
   exit 1
 fi
 
+if [ "$TITAN_NODE_TYPE" = "full" ]; then
+  export UNSAFE_SKIP_BACKUP=true
+fi
+
 # if $TITAN_HOME/data already contains *.db => node is already initialized
 skip_init_node="false"
 if [ -d "${TITAN_HOME}/data/application.db" ] && [ -d "${TITAN_HOME}/data/state.db" ] && [ -d "${TITAN_HOME}/data/blockstore.db" ]; then
