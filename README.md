@@ -63,7 +63,7 @@ This command will run titan node directly on your machine. All node data will be
 - `--sync-type`: Sync type of node, support `full`, `fast`
 - `--moniker`: Moniker of node
 - `--ext-addr`: External address of node
-- `--add-seeds`: Add more seeds to node config. EX: <80fbc7606d7d8799825b7b44a0b4d53342d92211@ec2-val-1.ap-southeast-1.titan-testnet.internal>:26656
+- `--add-seeds`: Add more seeds to node config. E.g.: <80fbc7606d7d8799825b7b44a0b4d53342d92211@ec2-val-1.ap-southeast-1.titan-testnet.internal>:26656
 - `--log`: Log level of node, support `info`, `warn`, `error`, `debug`
 - `--force-init`: (WARNING) Force to init node data. This will clear all current data of node and init new one (it will try backup and restore node_key).
 - `--init-only`: Only init node data, do not run node
