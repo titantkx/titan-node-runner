@@ -144,6 +144,7 @@ print_help() {
   echo "  --ext-addr <string>  External address of node. Example: 159.89.10.97:26656"
   echo "  --add-seeds <string>  Additional seeds of node. EX: 80fbc7606d7d8799825b7b44a0b4d53342d92211@ec2-val-1.ap-southeast-1.titan-testnet.internal:26656"
   echo "  --log <info|debug|error|warn>  Log level of node"
+  echo "  --shell <sh|bash|fish> Start shell mode"
   echo "  --help  Print help"
   echo "  -- Pass all following arguments to cosmovisor"
 }
@@ -159,6 +160,17 @@ while [ "$#" -gt 0 ]; do
     --help)
       print_help
       exit 0
+      ;;
+    --shell)
+      shift
+      if [ "$1" = "sh" ] || [ "$1" = "bash" ] || [ "$1" = "fish" ]; then
+        exec "$1"
+        exit 0
+      else
+        echo "Unknown shell type $1"
+        print_help
+        exit 1
+      fi
       ;;
     --chain-type)
       shift
