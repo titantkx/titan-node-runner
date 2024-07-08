@@ -125,7 +125,9 @@ if [ -z "$DAEMON_RESTART_AFTER_UPGRADE" ]; then
   export DAEMON_RESTART_AFTER_UPGRADE=true
 fi
 echo "DAEMON_RESTART_AFTER_UPGRADE: $DAEMON_RESTART_AFTER_UPGRADE"
-export DAEMON_ALLOW_DOWNLOAD_BINARIES=true
+if [ -z "$DAEMON_ALLOW_DOWNLOAD_BINARIES" ]; then
+  export DAEMON_ALLOW_DOWNLOAD_BINARIES=true
+fi
 echo "DAEMON_ALLOW_DOWNLOAD_BINARIES: $DAEMON_ALLOW_DOWNLOAD_BINARIES"
 
 force_init="false"
@@ -274,9 +276,14 @@ if [ "$TITAN_NODE_TYPE" = "full" ] && [ "$TITAN_SYNC_TYPE" != "full" ]; then
   exit 1
 fi
 
-if [ "$TITAN_NODE_TYPE" = "full" ]; then
-  export UNSAFE_SKIP_BACKUP=true
+if [ -z "$UNSAFE_SKIP_BACKUP" ]; then
+  if [ "$TITAN_NODE_TYPE" = "full" ]; then
+    export UNSAFE_SKIP_BACKUP=true
+  else
+    export UNSAFE_SKIP_BACKUP=false
+  fi
 fi
+echo "UNSAFE_SKIP_BACKUP: $UNSAFE_SKIP_BACKUP"
 
 # if $TITAN_HOME/data already contains *.db => node is already initialized
 skip_init_node="false"
