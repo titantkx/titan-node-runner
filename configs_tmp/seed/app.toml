@@ -18,8 +18,7 @@ pruning = "custom"
 
 # These are applied if and only if the pruning strategy is custom.
 pruning-interval = "100"
-# 30 days in blocks (assuming 5.3 second block times)
-pruning-keep-recent = "489056"
+pruning-keep-recent = "20000"
 
 # HaltHeight contains a non-zero block height at which a node will gracefully
 # halt and shutdown that can be used to assist upgrades and testing.
