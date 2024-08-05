@@ -277,7 +277,7 @@ if [ "$TITAN_NODE_TYPE" = "full" ] && [ "$TITAN_SYNC_TYPE" != "full" ]; then
 fi
 
 if [ -z "$UNSAFE_SKIP_BACKUP" ]; then
-  if [ "$TITAN_NODE_TYPE" = "full" ]; then
+  if [ "$TITAN_NODE_TYPE" = "full" ] || [ "$TITAN_NODE_TYPE" = "sentry" ] || [ "$TITAN_NODE_TYPE" = "seed" ]; then
     export UNSAFE_SKIP_BACKUP=true
   else
     export UNSAFE_SKIP_BACKUP=false
