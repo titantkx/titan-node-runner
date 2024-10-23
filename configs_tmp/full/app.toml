@@ -330,7 +330,7 @@ allow-unprotected-txs = false
 max-open-connections = 0
 
 # EnableIndexer enables the custom transaction indexer for the EVM (ethereum transactions).
-enable-indexer = true
+enable-indexer = false
 
 # MetricsAddress defines the EVM Metrics server address to bind to. Pass --metrics in CLI to enable
 # Prometheus metrics path: /debug/metrics/prometheus
