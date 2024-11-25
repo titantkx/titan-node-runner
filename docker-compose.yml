@@ -10,8 +10,8 @@ services:
       dockerfile: Dockerfile
     restart: always
     expose:    
-      - 26656 # rpc
-      - 26657 # p2p
+      - 26656 # p2p
+      - 26657 # rpc
       - 9090  # grpc
       - 9091  # grpc-gateway
       - 1317  # rest
