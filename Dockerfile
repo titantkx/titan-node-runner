@@ -13,4 +13,6 @@ COPY titan-node-runner.sh /root/titan-node-runner.sh
 ENV HOME=/root
 ENV HOME_DATA=/root/data
 
+RUN mkdir -p $HOME_DATA
+
 ENTRYPOINT [ "/root/titan-node-runner.sh" ]
