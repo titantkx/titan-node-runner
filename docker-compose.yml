@@ -4,7 +4,7 @@ name: titan-node
 
 services:
   titan-node:
-    image: "titantkx/titan-node-runner:1.3.4"
+    image: "titantkx/titan-node-runner:1.3.5"
     build:
       context: .
       dockerfile: Dockerfile
