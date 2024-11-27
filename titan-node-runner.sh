@@ -490,7 +490,7 @@ mkdir -p "$HOME_DATA/titan_download"
 tar -xzf "$HOME_DATA/titan_${titand_start_version}_${platform_os}_${platform_arch}.tar.gz" -C "$HOME_DATA/titan_download"
 
 # get current version of titand
-titand_current_version=$("$HOME_DATA/titan_download/bin/titand" version 2>&1) || {
+titand_current_version=$("$HOME_DATA/titan_download/bin/titand" version --home "$TITAN_HOME" 2>&1) || {
   echo "titand version command failed: $titand_current_version"
   # if `titand_current_version` contain `error while loading shared libraries`
   if echo "$titand_current_version" | grep -q "error while loading shared libraries" || echo "$titand_current_version" | grep -q "Library not loaded"; then
@@ -512,7 +512,7 @@ titand_current_version=$("$HOME_DATA/titan_download/bin/titand" version 2>&1) ||
   fi
 }
 
-titand_current_version=$("$HOME_DATA"/titan_download/bin/titand version)
+titand_current_version=$("$HOME_DATA"/titan_download/bin/titand version --home "$TITAN_HOME")
 
 echo "Current version of titand: $titand_current_version"
 
