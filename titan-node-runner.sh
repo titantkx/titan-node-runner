@@ -381,7 +381,7 @@ if [ "$skip_init_node" = "true" ]; then
   config_updatable
 
   # get current version of titand
-  titand_current_version=$(cosmovisor run version 2>&1) || {
+  titand_current_version=$(cosmovisor run version --home "$TITAN_HOME" 2>&1) || {
     echo "titand version command failed: $titand_current_version"
     # if `titand_current_version` contain `error while loading shared libraries` or `Library not loaded`
     if echo "$titand_current_version" | grep -q "error while loading shared libraries" || echo "$titand_current_version" | grep -q "Library not loaded"; then
@@ -403,7 +403,7 @@ if [ "$skip_init_node" = "true" ]; then
     fi
   }
 
-  titand_current_version=$(cosmovisor run version | sed -n '2p')
+  titand_current_version=$(cosmovisor run version --home "$TITAN_HOME" | sed -n '2p')
   echo "Current version of titand: $titand_current_version"
 
   # if params_for_titand is not empty, run cosmovisor with params
