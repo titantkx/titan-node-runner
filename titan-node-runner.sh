@@ -131,7 +131,7 @@ fi
 echo "DAEMON_ALLOW_DOWNLOAD_BINARIES: $DAEMON_ALLOW_DOWNLOAD_BINARIES"
 
 force_init="false"
-
+custom_start_titand_version=
 # print help function
 print_help() {
   echo "Usage: titan-node-runner.sh [OPTIONS]"
@@ -140,6 +140,7 @@ print_help() {
   echo "  --chain-type <mainnet|testnet>  Chain type of titan network"
   echo "  --node-type <full|sentry|validator|seed>  Node type of titan network"
   echo "  --sync-type <fast|full>  Sync type of titan network"
+  echo "  --titand-version <string>  Version of titand to first run. Only used when TITAN_SYNC_TYPE is fast. Example: 4.0.0-rc.1"
   echo "  --force-init  Force init node"
   echo "  --init-only  Only init node"
   echo "  --moniker <string>  Moniker of node"
@@ -185,6 +186,10 @@ while [ "$#" -gt 0 ]; do
     --sync-type)
       shift
       TITAN_SYNC_TYPE=$1
+      ;;
+    --titand-version)
+      shift
+      custom_start_titand_version=$1
       ;;
     --force-init)
       force_init="true"
@@ -459,9 +464,14 @@ if [ "$TITAN_SYNC_TYPE" = "full" ]; then
 elif [ "$TITAN_SYNC_TYPE" = "fast" ]; then
   # get current version of rpc node from $TITAN_RPC_ENDPOINT/abci_info
   current_abci_info=$(curl -s "${TITAN_RPC_ENDPOINT}/abci_info")
-  # get current version of rpc node
-  titand_start_version=$(echo "$current_abci_info" | jq -r '.result.response.version')
   last_block_height=$(echo "$current_abci_info" | jq -r '.result.response.last_block_height')
+  # if have `custom_start_titand_version` use it, else get from `current_abci_info`
+  if [ -n "$custom_start_titand_version" ]; then
+    titand_start_version="$custom_start_titand_version"
+  else
+    # get current version of rpc node
+    titand_start_version=$(echo "$current_abci_info" | jq -r '.result.response.version')
+  fi
 fi
 
 echo "Current version of titand: $titand_start_version"
